@@ -150,3 +150,25 @@ uFeeble::Return uFeeble::Join()
 
 
 
+
+
+Observable::Observer::Observer(Observable &refObservable) : refObservable(refObservable)
+{;}
+
+
+Observable::Observer &Observable::getObserver()
+{
+    return *pObserver;
+}
+
+Observable::Observable()
+{
+    pObserver = new Observer (*this);
+}
+
+Observable::~Observable()
+{
+    delete pObserver;
+}
+
+

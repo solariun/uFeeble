@@ -20,9 +20,13 @@ private:
     uint32_t nLockCount;
     
     friend class Observer;
+    
 protected:
 public:
 
+    Observable();
+    ~Observable();
+    
     class Observer
     {
     private:
@@ -53,12 +57,26 @@ public:
         bool CAN_WRITE : 1;
     } type;
     
+    size_t notify = 0;
+    
     Observer& getObserver();
     
     //The Observable can not be copied or assigned
     //It will only exist where it was created
     Observable (const Observable&) = delete;
     Observable& operator= (const Observable&) = delete;
+    
+    
+    //Set Operations
+    
+    void lock();
+    uint32_t peerLock();
+    void unlock();
+    
+    void Notify_ERROR(size_t nValue);
+    
+private:
+    Observer* pObserver;
 };
 
 
