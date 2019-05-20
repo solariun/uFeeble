@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0E01FE8422831D9F00C571BC /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E01FE8322831D9F00C571BC /* main.cpp */; };
+		0E01FE8C22831DC300C571BC /* uFeeble.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E01FE8A22831DC300C571BC /* uFeeble.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,6 +26,8 @@
 /* Begin PBXFileReference section */
 		0E01FE8022831D9E00C571BC /* uFeeble */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = uFeeble; sourceTree = BUILT_PRODUCTS_DIR; };
 		0E01FE8322831D9F00C571BC /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		0E01FE8A22831DC300C571BC /* uFeeble.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = uFeeble.cpp; sourceTree = "<group>"; };
+		0E01FE8B22831DC300C571BC /* uFeeble.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = uFeeble.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +61,8 @@
 			isa = PBXGroup;
 			children = (
 				0E01FE8322831D9F00C571BC /* main.cpp */,
+				0E01FE8A22831DC300C571BC /* uFeeble.cpp */,
+				0E01FE8B22831DC300C571BC /* uFeeble.hpp */,
 			);
 			path = uFeeble;
 			sourceTree = "<group>";
@@ -118,6 +123,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0E01FE8C22831DC300C571BC /* uFeeble.cpp in Sources */,
 				0E01FE8422831D9F00C571BC /* main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

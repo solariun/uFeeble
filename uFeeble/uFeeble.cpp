@@ -1,0 +1,126 @@
+//
+//  uFeeble.cpp
+//  uFeeble
+//
+//  Created by GUSTAVO CAMPOS on 08/05/2019.
+//  Copyright © 2019 GUSTAVO CAMPOS. All rights reserved.
+//
+
+#include "uFeeble.hpp"
+#include <sys/time.h>
+#include <unistd.h>
+
+#define MIN(a,b) (((a)<(b))?(a):(b))
+
+uFeeble::Thread::Thread()
+{
+}
+
+uint64_t uFeeble::Thread::getTimeSleeping()
+{
+    return nTimeSleeping;
+}
+
+
+
+
+
+uFeeble::Return uFeeble::Create(uFeeble::Thread &refThread, uint32_t nTimeCadency)
+{
+    refThread.pNext = nullptr;
+    
+    refThread.nTimeCadency = nTimeCadency;
+    
+    if (pStart == nullptr)
+    {
+        pStart = &refThread;
+    }
+    else
+    {
+        Thread* pOffset = pStart;
+        
+        while (pOffset->pNext != nullptr) pOffset = pOffset->pNext;
+        
+        pOffset->pNext = &refThread;
+    }
+    
+    nThreadCount++;
+    
+    
+    std::cout << "[ADDING]\t(" << (nThreadCount-1) << ") - Memory: [" << ((size_t) &refThread) << "]" << std::endl;
+    
+    return Return::OK;
+}
+
+inline uint64_t getMileSeconds()
+{
+    struct timeval tp;
+    gettimeofday(&tp, NULL);
+    
+    return tp.tv_sec * 1000 + tp.tv_usec / 1000; //get current timestamp in milliseconds
+}
+
+
+void uFeeble::Scheduler()
+{
+    if (pStart == nullptr) return;
+    
+    uint64_t nTimeNow;
+    int64_t nNextEvent;
+    int64_t nEventCalc;
+    
+    Thread* pOffSet;
+    
+    while ((pOffSet = pStart))
+    {
+        nTimeNow = getMileSeconds();
+        nNextEvent=nTimeNow;
+        
+        //This will initiate all thread counters
+        if (pOffSet->nLastActive == 0)
+        {
+            pOffSet->nLastActive = nTimeNow;
+        }
+        
+        do
+        {
+            nEventCalc = (int64_t)((int64_t) pOffSet->nTimeCadency - (nTimeNow - (int64_t) pOffSet->nLastActive));
+            
+            if (nEventCalc < 1)
+            {
+                //std::cout << "Delay: (" << nNextEvent << ")" << std::endl;
+                pOffSet->nTimeSleeping = getMileSeconds() - pOffSet->nLastActive;
+                pOffSet->Loop();
+                pOffSet->nLastActive = getMileSeconds();
+            }
+            else
+                nNextEvent = (int64_t) MIN ((int64_t) nNextEvent, (int64_t) nEventCalc);
+            
+            
+            //std::cout << __PRETTY_FUNCTION__ << ": [" << ((size_t) pOffSet) << "] expires at: [" << pOffSet->nTimeCadency << "].[" << (nTimeNow - pOffSet->nLastActive) << "] nNextEvent: [" << nNextEvent << "]- Calc: [" << (int64_t)((int64_t) pOffSet->nTimeCadency - (nTimeNow - (int64_t) pOffSet->nLastActive)) << "] EventCalc: [" << nEventCalc << "]" << std::endl;
+            
+            fflush(stdout);
+            
+        } while ((pOffSet = pOffSet->pNext) !=  nullptr);
+        
+        //std::cout << "restarting.... sleeping (" << nNextEvent << ")" << std::endl << std::endl;
+        
+        if (nNextEvent > 0 && nNextEvent != nTimeNow)
+        {
+            //std::cout << "Sleeping..." << getMileSeconds() <<  std::endl;
+            usleep ((useconds_t) (nNextEvent << 9));
+            //std::cout << "Waking up..." << getMileSeconds() <<  std::endl << std::endl;
+        }
+            
+    }
+}
+
+uFeeble::Return uFeeble::Join()
+{
+    Scheduler();
+    
+    return Return::ERROR;
+}
+
+
+
