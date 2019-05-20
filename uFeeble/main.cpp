@@ -21,7 +21,7 @@ protected:
     {
         nValue++;
         
-        std::cout << "Loop1: [" << ((size_t) this) << "] Value: [" << nValue << "] Slept for: [" << getTimeSleeping() << "]" << std::endl;
+        std::cout << "Loop1: [" << ((size_t) getID()) << "] Value: [" << nValue << "] Slept for: [" << getTimeSleeping() << "] Scheduler@:[" << getSchedulerTime()  << "] << Last ExecTime:[" << getLastExecTime() << "]" << std::endl;
     }
 public:
     

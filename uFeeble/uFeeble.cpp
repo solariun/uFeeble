@@ -21,12 +21,32 @@ uint64_t uFeeble::Thread::getTimeSleeping()
     return nTimeSleeping;
 }
 
+uint32_t uFeeble::Thread::getID()
+{
+    return nID;
+}
+
+uint32_t uFeeble::Thread::getSchedulerTime()
+{
+    return nTimeCadency;
+}
+
+uint32_t uFeeble::Thread::getLastExecTime()
+{
+    return nExecutionTime;
+}
+
+
+
+
 
 
 
 
 uFeeble::Return uFeeble::Create(uFeeble::Thread &refThread, uint32_t nTimeCadency)
 {
+    if (nThreadCount == UINT32_MAX) return Return::ERROR;
+    
     refThread.pNext = nullptr;
     
     refThread.nTimeCadency = nTimeCadency;
@@ -46,6 +66,7 @@ uFeeble::Return uFeeble::Create(uFeeble::Thread &refThread, uint32_t nTimeCadenc
     
     nThreadCount++;
     
+    refThread.nID = nThreadCount;
     
     std::cout << "[ADDING]\t(" << (nThreadCount-1) << ") - Memory: [" << ((size_t) &refThread) << "]" << std::endl;
     
@@ -89,12 +110,17 @@ void uFeeble::Scheduler()
             if (nEventCalc < 1)
             {
                 //std::cout << "Delay: (" << nNextEvent << ")" << std::endl;
-                pOffSet->nTimeSleeping = getMileSeconds() - pOffSet->nLastActive;
-                pOffSet->Loop();
                 pOffSet->nLastActive = getMileSeconds();
+                pOffSet->nTimeSleeping = (uint32_t) pOffSet->nLastActive - pOffSet->nLastActive;
+                pOffSet->Loop();
+                pOffSet->nExecutionTime = (uint32_t) getMileSeconds() - pOffSet->nLastActive;
+                
+                nNextEvent = pOffSet->nTimeCadency - (pOffSet->nExecutionTime % pOffSet->nTimeCadency);
+                
             }
-            else
-                nNextEvent = (int64_t) MIN ((int64_t) nNextEvent, (int64_t) nEventCalc);
+            
+            
+            nNextEvent = (int64_t) MIN ((int64_t) nNextEvent, (int64_t) nEventCalc);
             
             
             //std::cout << __PRETTY_FUNCTION__ << ": [" << ((size_t) pOffSet) << "] expires at: [" << pOffSet->nTimeCadency << "].[" << (nTimeNow - pOffSet->nLastActive) << "] nNextEvent: [" << nNextEvent << "]- Calc: [" << (int64_t)((int64_t) pOffSet->nTimeCadency - (nTimeNow - (int64_t) pOffSet->nLastActive)) << "] EventCalc: [" << nEventCalc << "]" << std::endl;
@@ -108,7 +134,7 @@ void uFeeble::Scheduler()
         if (nNextEvent > 0 && nNextEvent != nTimeNow)
         {
             //std::cout << "Sleeping..." << getMileSeconds() <<  std::endl;
-            usleep ((useconds_t) (nNextEvent << 9));
+            usleep ((useconds_t) (nNextEvent * 1000));
             //std::cout << "Waking up..." << getMileSeconds() <<  std::endl << std::endl;
         }
             
