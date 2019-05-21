@@ -87,6 +87,7 @@ void uFeeble::Scheduler()
     if (pStart == nullptr) return;
     
     uint64_t nTimeNow;
+    int64_t nTimeFactor;
     int64_t nNextEvent;
     int64_t nEventCalc;
     
@@ -110,10 +111,15 @@ void uFeeble::Scheduler()
             if (nEventCalc < 1)
             {
                 //std::cout << "Delay: (" << nNextEvent << ")" << std::endl;
-                pOffSet->nLastActive = getMileSeconds();
-                pOffSet->nTimeSleeping = (uint32_t) pOffSet->nLastActive - pOffSet->nLastActive;
+                
+                {
+                    uint64_t nTimeTemp = getMileSeconds();
+                    pOffSet->nTimeSleeping = (uint32_t) (nTimeTemp - pOffSet->nLastActive);
+                    pOffSet->nLastActive = getMileSeconds();
+                }
+                
                 pOffSet->Loop();
-                pOffSet->nExecutionTime = (uint32_t) getMileSeconds() - pOffSet->nLastActive;
+                pOffSet->nExecutionTime = (uint32_t) (getMileSeconds() - pOffSet->nLastActive);
                 
                 nNextEvent = pOffSet->nTimeCadency - (pOffSet->nExecutionTime % pOffSet->nTimeCadency);
                 
@@ -129,12 +135,15 @@ void uFeeble::Scheduler()
             
         } while ((pOffSet = pOffSet->pNext) !=  nullptr);
         
-        //std::cout << "restarting.... sleeping (" << nNextEvent << ")" << std::endl << std::endl;
+        nTimeFactor = (getMileSeconds() - nTimeNow)+5;
+        nTimeFactor = nTimeFactor < 0 ? 0 : nTimeFactor;
         
-        if (nNextEvent > 0 && nNextEvent != nTimeNow)
+        //std::cout << "restarting.... factor (" << nTimeFactor << ")" << std::endl << std::endl;
+        
+        if (nNextEvent > nTimeFactor && nNextEvent != nTimeNow)
         {
             //std::cout << "Sleeping..." << getMileSeconds() <<  std::endl;
-            usleep ((useconds_t) (nNextEvent * 1000));
+            usleep ((useconds_t) ((nNextEvent - nTimeFactor) * 1000));
             //std::cout << "Waking up..." << getMileSeconds() <<  std::endl << std::endl;
         }
             
