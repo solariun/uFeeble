@@ -10,14 +10,21 @@
 #include "uFeeble.hpp"
 
 
-class loop1 : public uFeeble::Thread
+class loop1 : public uFeeble::Thread, protected ObservableCalls
 {
 private:
     size_t nValue=0;
     
+    
 protected:
     
-   void Loop ()
+    void onCanRead () override
+    {
+        
+    }
+    
+    
+   void Loop () override
     {
         nValue++;
         

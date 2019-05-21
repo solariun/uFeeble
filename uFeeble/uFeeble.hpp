@@ -13,11 +13,24 @@
 #include <stdio.h>
 #include <cstdint>
 
+class ObservableCalls
+{
+protected:
+    virtual void onLock();
+    virtual void onError();
+    virtual void onNotify();
+    virtual void onPending();
+    virtual void onCanRead();
+    virtual void onCanWrite();
+    
+    friend class Observable;
+};
 
-class Observable
+
+class Observable 
 {
 private:
-    uint32_t nLockCount;
+    uint32_t nLocks=0;
     
     friend class Observer;
     
@@ -26,13 +39,27 @@ public:
 
     Observable();
     ~Observable();
-    
-    class Observer
+
+    enum class type
+    {
+        NONE = 0,
+        LOCKED=1,
+        ERROR,
+        NOTIFY,
+        PENDING,
+        CANREAD,
+        CANWRITE
+    };
+
+    class Observer : protected ObservableCalls
     {
     private:
         
         Observable& refObservable;
         Observer (Observable& refObservable);
+    
+        type notify = type::NONE;
+        size_t nMessage  = 0;
         
         friend class Observable;
         
@@ -46,20 +73,8 @@ public:
         Observer (const Observer&) = delete;
     };
     
-
-    typedef struct
-    {
-        bool LOCKED : 1;
-        bool ERROR : 1;
-        bool NOTIFY : 1;
-        bool PENDING : 1;
-        bool CAN_READ :1;
-        bool CAN_WRITE : 1;
-    } type;
     
-    size_t notify = 0;
-    
-    Observer& getObserver();
+    Observer& getObserver ();
     
     //The Observable can not be copied or assigned
     //It will only exist where it was created
@@ -69,11 +84,10 @@ public:
     
     //Set Operations
     
-    void lock();
-    uint32_t peerLock();
-    void unlock();
+    void lock ();
+    void unlock ();
     
-    void Notify_ERROR(size_t nValue);
+    void notify (type& typeAction, size_t nMessage);
     
 private:
     Observer* pObserver;

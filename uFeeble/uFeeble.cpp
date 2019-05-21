@@ -180,4 +180,31 @@ Observable::~Observable()
     delete pObserver;
 }
 
+void Observable::notify(Observable::type& typeAction, size_t nMessage)
+{
+    pObserver->notify = typeAction;
+    pObserver->nMessage = nMessage;
+}
 
+
+
+
+
+
+void ObservableCalls::onLock()
+{;}
+
+void ObservableCalls::onError()
+{;}
+
+void ObservableCalls::onNotify()
+{;}
+
+void ObservableCalls::onPending()
+{;}
+
+void ObservableCalls::onCanRead()
+{;}
+
+void ObservableCalls::onCanWrite()
+{;}
