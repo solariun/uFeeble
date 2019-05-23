@@ -21,17 +21,13 @@ class ObservableCalls
 private:
     bool __boolInternal=false;
     
-    ObservableCalls* pNext = nullptr;
-    
     friend class Observable;
+    
 protected:
-    
-    
     virtual void onError(size_t nMessage);
     virtual void onNotify(size_t nMessage);
 
     friend class Observable;
-    
 };
 
 
@@ -46,7 +42,7 @@ public:
     Observable();
     ~Observable();
 
-    enum class type
+    enum class type : uint8_t
     {
         NONE = 0,
         ERROR,
@@ -122,24 +118,13 @@ class uFeeble
 {
 private:
     
-    enum class Signal
-    {
-        NONE,
-        TIMEDOUT,
-        LOCKED,
-        HALTED,
-        RUN,
-        NOTIFIELD
-    };
-    
-    
     void Scheduler ();
     
     friend class Observable;
     
 public:
     
-    enum class Return
+    enum class Return : uint8_t
     {
         ERROR = 0,
         OK
@@ -156,13 +141,13 @@ public:
         uint32_t nTimeCadency=0;
         uint32_t nID;
         
-        Signal   oSignal = Signal::NONE; //starts with Signal::NONE
-        uint32_t nSigNote = 0; //Starts with 0
         
         Thread*  pNext;
         
         friend class uFeeble;
         friend class Observable;
+        
+        
     protected:
         virtual void Loop () = 0;
         
@@ -173,7 +158,6 @@ public:
         uint32_t getSchedulerTime();
         uint32_t getLastExecTime();
         Thread();
-        
     };
     
     

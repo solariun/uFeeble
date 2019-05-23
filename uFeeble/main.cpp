@@ -105,9 +105,12 @@ int main(int argc, const char * argv[]) {
         bool CANWRITE : 1;
     } type;
 
-    std::cout << "Size: [" << sizeof (type) << "]" << std::endl;
+    std::cout << "uFeeble Size: [" << sizeof (uFeeble) << "]" << std::endl;
+    std::cout << "Thread Size: [" << sizeof (uFeeble::Thread) << "]" << std::endl;
+    std::cout << "Observable Size: [" << sizeof (Observable) << "]" << std::endl;
+    std::cout << "Observer Size: [" << sizeof (Observable::Observer) << "]" << std::endl;
     
-    //exit (0)
+    exit (0);
     
     uFeeble uKernel;
     
