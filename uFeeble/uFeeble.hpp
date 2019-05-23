@@ -13,25 +13,31 @@
 #include <stdio.h>
 #include <cstdint>
 
+class uFeeble;
+
+
 class ObservableCalls
 {
-protected:
-    virtual void onLock();
-    virtual void onError();
-    virtual void onNotify();
-    virtual void onPending();
-    virtual void onCanRead();
-    virtual void onCanWrite();
+private:
+    bool __boolInternal=false;
+    
+    ObservableCalls* pNext = nullptr;
     
     friend class Observable;
+protected:
+    
+    
+    virtual void onError(size_t nMessage);
+    virtual void onNotify(size_t nMessage);
+
+    friend class Observable;
+    
 };
 
 
 class Observable 
 {
 private:
-    uint32_t nLocks=0;
-    
     friend class Observer;
     
 protected:
@@ -43,12 +49,8 @@ public:
     enum class type
     {
         NONE = 0,
-        LOCKED=1,
         ERROR,
         NOTIFY,
-        PENDING,
-        CANREAD,
-        CANWRITE
     };
 
     class Observer : protected ObservableCalls
@@ -57,20 +59,39 @@ public:
         
         Observable& refObservable;
         Observer (Observable& refObservable);
-    
-        type notify = type::NONE;
+        
+        uFeeble* puFeeble = nullptr;
+        
+        uint32_t nLocks=0;
+
+        
         size_t nMessage  = 0;
         
         friend class Observable;
         
+        union type
+        {
+            struct
+            {
+                bool ERROR : 1;
+                bool NOTIFY : 1;
+            } type;
+            
+            uint8_t nValue = 0;
+        } action;
+        
     protected:
         
     public:
-        Observer () = delete;
         
         //Observer can not be copied
         //but can be assigned by href
         Observer (const Observer&) = delete;
+        Observer () = delete;
+        
+        
+        void Attach(uFeeble& refuFeeble);
+        void Dettach();
     };
     
     
@@ -87,10 +108,11 @@ public:
     void lock ();
     void unlock ();
     
-    void notify (type& typeAction, size_t nMessage);
+    void notify (type& typeAction, size_t nMessage = 0);
     
 private:
     Observer* pObserver;
+    
 };
 
 
@@ -113,6 +135,8 @@ private:
     
     void Scheduler ();
     
+    friend class Observable;
+    
 public:
     
     enum class Return
@@ -122,7 +146,7 @@ public:
     };
 
     
-    class Thread
+    class Thread :  protected ObservableCalls
     {
     private:
         uint64_t nLastActive = 0;
@@ -138,6 +162,7 @@ public:
         Thread*  pNext;
         
         friend class uFeeble;
+        friend class Observable;
     protected:
         virtual void Loop () = 0;
         

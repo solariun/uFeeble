@@ -164,47 +164,88 @@ uFeeble::Return uFeeble::Join()
 Observable::Observer::Observer(Observable &refObservable) : refObservable(refObservable)
 {;}
 
+void Observable::Observer::Attach(uFeeble &refuFeeble)
+{
+    puFeeble = &refuFeeble;
+}
+
+void Observable::Observer::Dettach()
+{
+    puFeeble = nullptr;
+}
+
+
+
 
 Observable::Observer &Observable::getObserver()
 {
     return *pObserver;
 }
 
+
 Observable::Observable()
 {
     pObserver = new Observer (*this);
 }
 
+
 Observable::~Observable()
 {
-    delete pObserver;
+    if (pObserver != nullptr) delete pObserver;
 }
+
 
 void Observable::notify(Observable::type& typeAction, size_t nMessage)
 {
-    pObserver->notify = typeAction;
-    pObserver->nMessage = nMessage;
+    
+    if (pObserver->puFeeble == nullptr)
+    {
+        switch (typeAction)
+        {
+        case type::ERROR:
+                pObserver->action.type.ERROR = 1;
+            break;
+                
+        case type::NOTIFY:
+                pObserver->action.type.NOTIFY=1;
+            break;
+                
+        case type::NONE:
+                 pObserver->action.nValue = 0;
+            break;
+        }
+    
+        pObserver->nMessage = nMessage;
+    }
+    else if (typeAction != type::NONE)
+    {
+        uFeeble::Thread* pThOffset = pObserver->puFeeble->pStart;
+        
+        if (pThOffset != nullptr) do
+        {
+            if (pThOffset->__boolInternal == false) switch (typeAction)
+            {
+                case type::ERROR:
+                    pThOffset->onError (nMessage);
+                    break;
+                    
+                case type::NOTIFY:
+                    pThOffset->onNotify (nMessage);
+                    break;
+                    
+                default:
+                    break;
+            }
+        } while ((pThOffset = pThOffset->pNext) != nullptr);
+        
+        pObserver->action.nValue = 0;
+    }
 }
 
 
 
+void ObservableCalls::onError(size_t nMessage)
+{__boolInternal = true;}
 
-
-
-void ObservableCalls::onLock()
-{;}
-
-void ObservableCalls::onError()
-{;}
-
-void ObservableCalls::onNotify()
-{;}
-
-void ObservableCalls::onPending()
-{;}
-
-void ObservableCalls::onCanRead()
-{;}
-
-void ObservableCalls::onCanWrite()
-{;}
+void ObservableCalls::onNotify(size_t nMessage)
+{__boolInternal = true;}
