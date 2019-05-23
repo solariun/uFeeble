@@ -95,22 +95,11 @@ int main(int argc, const char * argv[]) {
     loop1 objLoop2;
     Show  objShow;
     
-    struct
-    {
-        bool LOCKED : 1;
-        bool ERROR : 1;
-        bool NOTIFY : 1;
-        bool PENDING : 1;
-        bool CANREAD : 1;
-        bool CANWRITE : 1;
-    } type;
-
     std::cout << "uFeeble Size: [" << sizeof (uFeeble) << "]" << std::endl;
     std::cout << "Thread Size: [" << sizeof (uFeeble::Thread) << "]" << std::endl;
     std::cout << "Observable Size: [" << sizeof (Observable) << "]" << std::endl;
     std::cout << "Observer Size: [" << sizeof (Observable::Observer) << "]" << std::endl;
     
-    exit (0);
     
     uFeeble uKernel;
     
