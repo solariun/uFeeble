@@ -112,7 +112,6 @@ int main(int argc, const char * argv[]) {
     
     uKernel.Join();
     
-    std::cout << "Hello, World!\n";
     return 0;
 }
 
