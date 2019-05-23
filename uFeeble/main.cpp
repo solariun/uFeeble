@@ -63,7 +63,7 @@ protected:
     
     void onNotify (size_t nMessage) override
     {
-        std::cout << ">>>> NOTIFICATION RECEIVED" << std::endl;
+        std::cout << __PRETTY_FUNCTION__ << " * NOTIFICATION RECEIVED" << std::endl;
         
         loop1* pLoop = (loop1*) nMessage;
         
