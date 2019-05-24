@@ -108,7 +108,6 @@ void uFeeble::Scheduler()
                 //std::cout << "Delay: (" << nNextEvent << ")" << std::endl;
                 
                 pOffSet->nLastActive = getMileSeconds();
-            
                 pOffSet->Loop(nEventCalc);
                 pOffSet->nExecutionTime = (uint32_t) (getMileSeconds() - pOffSet->nLastActive);
                 
@@ -123,6 +122,7 @@ void uFeeble::Scheduler()
             //std::cout << __PRETTY_FUNCTION__ << ": [" << ((size_t) pOffSet) << "] expires at: [" << pOffSet->nTimeCadency << "].[" << (nTimeNow - pOffSet->nLastActive) << "] nNextEvent: [" << nNextEvent << "]- Calc: [" << (int64_t)((int64_t) pOffSet->nTimeCadency - (nTimeNow - (int64_t) pOffSet->nLastActive)) << "] EventCalc: [" << nEventCalc << "]" << std::endl;
             
         } while ((pOffSet = pOffSet->pNext) !=  nullptr);
+        
         
         nTimeFactor = (getMileSeconds() - nTimeNow)+5;
         nTimeFactor = nTimeFactor < 0 ? 0 : nTimeFactor;
@@ -153,10 +153,12 @@ uFeeble::Return uFeeble::Join()
 Observable::Observer::Observer(Observable &refObservable) : refObservable(refObservable)
 {;}
 
+
 void Observable::Observer::Attach(uFeeble &refuFeeble)
 {
     puFeeble = &refuFeeble;
 }
+
 
 void Observable::Observer::Dettach()
 {
