@@ -149,12 +149,12 @@ public:
     protected:
         virtual void Loop (int64_t nEventAt) = 0;
         
+        Thread ();
         
     public:
         uint32_t getID();
         uint32_t getSchedulerTime();
         uint32_t getLastExecTime();
-        Thread();
     };
     
     
@@ -175,6 +175,7 @@ private:
     
 protected:
     
+    uint64_t getMileSeconds();
 };
 
 

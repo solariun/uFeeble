@@ -55,7 +55,7 @@ public:
 class Show : public uFeeble::Thread
 {
 private:
-    size_t nSensor[2];
+    size_t nSensor[2] = { 0,0 };
     
     
     

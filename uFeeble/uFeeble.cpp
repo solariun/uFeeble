@@ -63,12 +63,14 @@ uFeeble::Return uFeeble::Create(uFeeble::Thread &refThread, uint32_t nTimeCadenc
     
     refThread.nID = nThreadCount;
     
+    refThread.nLastActive = getMileSeconds();
+    
     std::cout << "[ADDING]\t(" << (nThreadCount-1) << ") - Memory: [" << ((size_t) &refThread) << "]" << std::endl;
     
     return Return::OK;
 }
 
-inline uint64_t getMileSeconds()
+inline uint64_t uFeeble::getMileSeconds()
 {
     struct timeval tp;
     gettimeofday(&tp, NULL);
@@ -88,6 +90,18 @@ void uFeeble::Scheduler()
     
     Thread* pOffSet;
     
+    pOffSet = pStart;
+    
+    
+    //Initializing timers
+    do
+    {
+        pOffSet->nLastActive = getMileSeconds();
+    } while ((pOffSet = pOffSet->pNext) !=  nullptr);
+    
+    
+    //Start Scheduler procedures
+    //the small amount of time will be 1ms.
     while ((pOffSet = pStart))
     {
         nTimeNow = getMileSeconds();
