@@ -22,11 +22,11 @@ private:
 protected:
     
     
-   void Loop () override
+   void Loop (int64_t nEventAt) override
     {
         nValue++;
         
-        std::cout << "Loop1: [" << ((size_t) getID()) << "] Value: [" << nValue << "] Slept for: [" << getTimeSleeping() << "] Scheduler@:[" << getSchedulerTime()  << "] << Last ExecTime:[" << getLastExecTime() << "]" << std::endl;
+        //std::cout << "Loop1: [" << ((size_t) getID()) << "] Value: [" << nValue << "] Slept for: [" << getTimeSleeping() << "] Scheduler@:[" << getSchedulerTime()  << "] << Last ExecTime:[" << getLastExecTime() << "]" << std::endl;
         
         {
             Observable::type tp = Observable::type::NOTIFY;
@@ -63,18 +63,18 @@ protected:
     
     void onNotify (size_t nMessage) override
     {
-        std::cout << __PRETTY_FUNCTION__ << " * NOTIFICATION RECEIVED" << std::endl;
+        //std::cout << __PRETTY_FUNCTION__ << " * NOTIFICATION RECEIVED" << std::endl;
         
         loop1* pLoop = (loop1*) nMessage;
         
-        std::cout << "\t From: [" << pLoop->getID() << "], Value: [" << pLoop->getValue() << "]" << std::endl << std::endl;
+        //std::cout << "\t From: [" << pLoop->getID() << "], Value: [" << pLoop->getValue() << "]" << std::endl << std::endl;
         
         nSensor [pLoop->getThreadID () - 1] = pLoop->getValue();
     }
     
-    void Loop () override
+    void Loop (int64_t nEventAt) override
     {
-        std::cout << ">>>> SHOW <<<<< : Sensors 1:[" << nSensor [0] << "], 2: [" << nSensor [1] <<  "] : Slept for: [" << getTimeSleeping() << "] Scheduler@:[" << getSchedulerTime()  << "] << Last ExecTime:[" << getLastExecTime() << "]" << std::endl;
+        std::cout << ">>>> SHOW <<<<< : Sensors 1:[" << nSensor [0] << "], 2: [" << nSensor [1] <<  "] : Slept for: [" << (getSchedulerTime() + (nEventAt* (-1))) << "] Scheduler@:[" << getSchedulerTime()  << "] << Last ExecTime:[" << getLastExecTime() << "]" << std::endl;
     }
     
 public:

@@ -16,11 +16,6 @@ uFeeble::Thread::Thread()
 {
 }
 
-uint64_t uFeeble::Thread::getTimeSleeping()
-{
-    return nTimeSleeping;
-}
-
 uint32_t uFeeble::Thread::getID()
 {
     return nID;
@@ -112,13 +107,9 @@ void uFeeble::Scheduler()
             {
                 //std::cout << "Delay: (" << nNextEvent << ")" << std::endl;
                 
-                {
-                    uint64_t nTimeTemp = getMileSeconds();
-                    pOffSet->nTimeSleeping = (uint32_t) (nTimeTemp - pOffSet->nLastActive);
-                    pOffSet->nLastActive = getMileSeconds();
-                }
-                
-                pOffSet->Loop();
+                pOffSet->nLastActive = getMileSeconds();
+            
+                pOffSet->Loop(nEventCalc);
                 pOffSet->nExecutionTime = (uint32_t) (getMileSeconds() - pOffSet->nLastActive);
                 
                 nNextEvent = pOffSet->nTimeCadency - (pOffSet->nExecutionTime % pOffSet->nTimeCadency);
@@ -130,8 +121,6 @@ void uFeeble::Scheduler()
             
             
             //std::cout << __PRETTY_FUNCTION__ << ": [" << ((size_t) pOffSet) << "] expires at: [" << pOffSet->nTimeCadency << "].[" << (nTimeNow - pOffSet->nLastActive) << "] nNextEvent: [" << nNextEvent << "]- Calc: [" << (int64_t)((int64_t) pOffSet->nTimeCadency - (nTimeNow - (int64_t) pOffSet->nLastActive)) << "] EventCalc: [" << nEventCalc << "]" << std::endl;
-            
-            fflush(stdout);
             
         } while ((pOffSet = pOffSet->pNext) !=  nullptr);
         

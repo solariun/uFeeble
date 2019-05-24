@@ -135,9 +135,7 @@ public:
     {
     private:
         uint64_t nLastActive = 0;
-        
         uint32_t nExecutionTime=0;
-        uint32_t nTimeSleeping = 0;
         uint32_t nTimeCadency=0;
         uint32_t nID;
         
@@ -149,11 +147,10 @@ public:
         
         
     protected:
-        virtual void Loop () = 0;
+        virtual void Loop (int64_t nEventAt) = 0;
         
         
     public:
-        uint64_t getTimeSleeping();
         uint32_t getID();
         uint32_t getSchedulerTime();
         uint32_t getLastExecTime();
