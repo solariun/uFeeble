@@ -166,12 +166,9 @@ public:
     Return Join ();
     
     
-    
 private:
     Thread* pStart = nullptr;
     uint32_t  nThreadCount = 0;
-    
-    Thread* nCurrent;
     
 protected:
     
